@@ -52,14 +52,13 @@
     <script>
         const galleryContainer = document.getElementById('gallery');
 
-        // Hardcoded variables to prevent URL parsing errors
+        // These variables align precisely with your repository parameters
         const username = "actincide17";
         const repo = "WatchingForever";
         const folderName = "Gallery"; 
 
         async function loadGallery() {
             try {
-                // Exact public API endpoint for your repository
                 const apiUrl = `https://github.com{username}/${repo}/contents/${folderName}`;
                 
                 const response = await fetch(apiUrl);
@@ -68,13 +67,12 @@
                 const files = await response.json();
 
                 files.forEach(file => {
-                    // Check strictly for .png files (case-insensitive)
                     if (file.name.toLowerCase().endsWith('.png')) {
                         const item = document.createElement('div');
                         item.className = 'gallery-item';
 
                         const img = document.createElement('img');
-                        img.src = file.download_url; // Direct raw URL to your image file
+                        img.src = file.download_url; 
                         img.alt = "Gallery Image";
 
                         item.appendChild(img);
