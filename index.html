@@ -56,48 +56,62 @@
     <div class="gallery-container" id="gallery"></div>
 
     <script>
-        // 1000 random digits in console
+        // 1. Prints a random set of 1000 digits to the console log
         let digits = '';
         for (let i = 0; i < 1000; i++) {
             digits += Math.floor(Math.random() * 10);
         }
         console.log(digits);
 
-        // Your image array
-        const images = [
-            'image1.jpg',
-            'image2.png',
-            'photo3.webp'
-        ];
-
-        // Alphabetically auto-sort the file names
-        images.sort((a, b) => a.localeCompare(b));
+        // 2. Pre-configured Repository Values
+        const USERNAME = 'actincide17';
+        const REPO = 'WatchingForever';
+        const FOLDER_PATH = 'Gallery'; 
 
         const container = document.getElementById('gallery');
+        let sortedImages = [];
+        let imageIndex = 0;
 
-        // Function to create and append an image element
         function appendImage(filename) {
             const imgElement = document.createElement('img');
-            imgElement.src = `gallery/${filename}`; 
+            imgElement.src = `https://githubusercontent.com{USERNAME}/${REPO}/main/${FOLDER_PATH}/${filename}`; 
             container.appendChild(imgElement);
         }
 
-        // Initial render: list the sorted images
-        images.forEach(filename => appendImage(filename));
+        async function fetchGallery() {
+            try {
+                const response = await fetch(`https://github.com{USERNAME}/${REPO}/contents/${FOLDER_PATH}`);
+                const files = await response.json();
 
-        // Infinite loop generator if there are more than 2 images
-        if (images.length > 2) {
-            let imageIndex = 0;
+                // Filters exclusively for .png extensions
+                const images = files
+                    .filter(file => file.name.toLowerCase().endsWith('.png'))
+                    .map(file => file.name);
 
-            window.addEventListener('scroll', () => {
-                // Check if user is scrolling near the bottom of the page
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-                    // Loop back to the start of the sorted list continuously
-                    appendImage(images[imageIndex]);
-                    imageIndex = (imageIndex + 1) % images.length;
+                // Alphabetically auto-sorts the files
+                sortedImages = images.sort((a, b) => a.localeCompare(b));
+
+                // Initial render list
+                sortedImages.forEach(filename => appendImage(filename));
+
+                // Activates endless list loop if more than 2 files exist
+                if (sortedImages.length > 2) {
+                    window.addEventListener('scroll', handleInfiniteScroll);
                 }
-            });
+
+            } catch (error) {
+                console.error("Could not fetch the repository images:", error);
+            }
         }
+
+        function handleInfiniteScroll() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                appendImage(sortedImages[imageIndex]);
+                imageIndex = (imageIndex + 1) % sortedImages.length;
+            }
+        }
+
+        fetchGallery();
     </script>
 
 </body>
